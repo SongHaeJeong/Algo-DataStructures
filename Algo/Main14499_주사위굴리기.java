@@ -56,18 +56,20 @@ public class Main14499_林荤困奔府扁 {
 			if (isBoolean(nx, ny) && map[nx][ny] == 0) {
 				changeDot(dir);
 				map[nx][ny] = dot[3][1];
+				System.out.println(dot[1][1]);
+				X = nx;
+				Y = ny;
 
-			}
-
-			if (isBoolean(nx, ny) && map[nx][ny] != 0) {
+			}else if (isBoolean(nx, ny) && map[nx][ny] != 0) {
 				changeDot(dir);
 				dot[3][1] = map[nx][ny];
 				map[nx][ny] = 0;
+				System.out.println(dot[1][1]);
+				X = nx;
+				Y = ny;
 			}
-			X = nx;
-			Y = ny;
+		
 
-			System.out.println(dot[1][1]);
 
 		}
 
@@ -75,32 +77,43 @@ public class Main14499_林荤困奔府扁 {
 
 	public static void changeDot(int dir) {
 		if (dir == 1) { // 悼率
-			swap(1, 0, 1, 1);
-			swap(1, 1, 1, 2);
-			swap(1, 2, 3, 1);
-			swap(3, 1, 1, 0);
-		} else if (dir == 2) { // 辑率
-			swap(1, 0, 3, 1);
-			swap(1, 1, 1, 0);
-			swap(1, 2, 1, 1);
-			swap(3, 1, 1, 2);
-		} else if (dir == 3) { // 合率
-			swap(0, 1, 1, 1);
-			swap(1, 1, 2, 1);
-			swap(2, 1, 3, 1);
-			swap(3, 1, 0, 1);
-		} else if (dir == 4) { // 巢率
-			swap(3, 1, 2, 1);
-			swap(2, 1, 1, 1);
-			swap(1, 1, 0, 1);
-			swap(0, 1, 3, 1);
-		}
-	}
+			int dotNum = dot[1][2];
+			for (int i = dot[0].length-1; i >0; i--) {
+				dot[1][i] = dot[1][i-1];
+			}
+			dot[1][0] = dotNum;
+			
+			int temp = dot[1][0];
+			dot[1][0] = dot[3][1];
+			dot[3][1] = temp;
+			
+		} else if (dir == 2) { // 辑率			
+			int dotNum = dot[1][0];
+			for (int i = 0; i < dot[0].length - 1; i++) {
+				dot[1][i] = dot[1][i + 1];
+			}
+			dot[1][2] = dotNum;
+			
+			int temp = dot[1][2];
+			dot[1][2] = dot[3][1];
+			dot[3][1] = temp;
+			
 
-	public static void swap(int x, int y, int q, int p) {
-		int temp = dot[q][p];
-		dot[q][p] = dot[x][y];
-		dot[x][y] = temp;
+		} else if (dir == 3) { // 合率
+			int dotNum = dot[3][1];
+			for (int i = dot.length - 1; i > 0; i--) {
+				dot[i][1] = dot[i - 1][1];
+			}
+			dot[0][1] = dotNum;
+		} else if (dir == 4) { // 巢率
+			int dotNum = dot[0][1];
+			for (int i = 0; i < dot.length - 1; i++) {
+				dot[i][1] = dot[i + 1][1];
+			}
+
+			dot[3][1] = dotNum;
+
+		}
 	}
 
 	public static boolean isBoolean(int x, int y) {
