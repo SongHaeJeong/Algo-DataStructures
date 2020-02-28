@@ -1,4 +1,5 @@
-package test;
+package Algo;
+
 
 
 import java.io.BufferedReader;
