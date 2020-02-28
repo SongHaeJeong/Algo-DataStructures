@@ -35,6 +35,7 @@ public class Main11057_오르막수 {
 				for (int k = j; k < dp[0].length; k++) {
 					dp[i][j] += dp[i-1][k];
 				}
+				dp[i][j] %= 10007;
 
 			}
 
