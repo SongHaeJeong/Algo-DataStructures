@@ -2,16 +2,14 @@ package Algo;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main17070_파이프옮기기1 {
 	private static int N, result;
 	private static int[][] map;
-	private static int[] dx = { 0, 1, 1 }; // 가로 세로 대각선
-	private static int[] dy = { 1, 0, 1 };
-
+	private static int[] dx = {0,1,1};
+	private static int[] dy = {1,0,1};
+	
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		N = Integer.parseInt(br.readLine());
@@ -30,118 +28,47 @@ public class Main17070_파이프옮기기1 {
 			map[0][i] = -1;
 		}
 
-		BFS();
+		dfs(1,2,0);
 		System.out.println(result);
 
 	}// end of main
 
-	public static void BFS() {
-		Queue<Info> queue = new LinkedList<>();
-		queue.add(new Info(1, 2, 0));
-
-		while (!queue.isEmpty()) {
-			Info in = queue.poll();
-			int row = in.row;
-			int column = in.column;
-			int type = in.type;
-
-			if (row == N && column == N) {
-				result++;
-				continue;
-			}
-
-			// 가로
-			if (type == 0) {
-				// 가로 , 대각선 가능
-
-				for (int i = 0; i < dx.length; i++) {
-					if (i != 1) { // 세로는 안됨
-						boolean flag = false;
-						int nRow = row + dx[i];
-						int nColumn = column + dy[i];
-
-						if (nRow > N || nColumn > N || map[nRow][nColumn] == 1)
-							continue;
-						if (i == 2) {
-
-							for (int j = 0; j < 2; j++) {
-								int tempRow = row + dx[j];
-								int tempColumn = column + dy[j];
-
-								if (tempRow > N || tempColumn > N || map[tempRow][tempColumn] == 1) {
-									flag = true;
-									break;
-								}
-
-							}
-
-						}
-						if (!flag)
-							queue.add(new Info(nRow, nColumn, i));
-
-					}
-				}
-
-				// 세로
-			} else if (type == 1) {
-				boolean flag = false;
-				for (int i = 0; i < dx.length; i++) {
-					if (i != 0) { // 세로는 안됨
-						int nRow = row + dx[i];
-						int nColumn = column + dy[i];
-
-						if (nRow > N || nColumn > N || map[nRow][nColumn] == 1)
-							continue;
-
-						if (i == 2) {
-
-							for (int j = 0; j < 2; j++) {
-								int tempRow = row + dx[j];
-								int tempColumn = column + dy[j];
-
-								if (tempRow > N || tempColumn > N || map[tempRow][tempColumn] == 1) {
-									flag = true;
-									break;
-								}
-
-							}
-
-						}
-						if (!flag)
-							queue.add(new Info(nRow, nColumn, i));
-					}
-				}
-				// 대각선
-			} else if (type == 2) {
-				boolean flag = false;
-				for (int i = 0; i < dx.length; i++) {
-					int nRow = row + dx[i];
-					int nColumn = column + dy[i];
-
-					if (nRow > N || nColumn > N || map[nRow][nColumn] == 1)
-						continue;
-
-					if(i == 2) {
-						
-						for (int j = 0; j < 2; j++) {
-							int tempRow = row +dx[j];
-							int tempColumn = column + dy[j];
-							
-							if(tempRow > N || tempColumn > N || map[tempRow][tempColumn] == 1) {
-								flag = true;
-								break;
-							}
-							
-						}
-						
-						
-					}
-					if(!flag) queue.add(new Info(nRow, nColumn, i));
-
-				}
-			}
+	private static void dfs(int row, int column, int dir) {
+		// TODO Auto-generated method stub
+		if(row == N && column == N) {
+			result++;
+			return;
 		}
+		
+		int[] Dir = getDir(dir);
+		
+		for (int i = 0; i < Dir.length; i++) {
+			
+			int nx = row + dx[Dir[i]];
+			int ny = column + dy[Dir[i]];
+			
+			if(nx > N || ny > N || map[nx][ny] != 0) continue;
+			if(Dir[i] == 2 && (map[row+1][column] != 0 || map[row][column+1] != 0)) continue;
+			dfs(nx, ny, Dir[i]);
+			
+		}
+		
+		
+	}
 
+	private static int[] getDir(int dir) {
+		// TODO Auto-generated method stub
+		if(dir == 0) {
+			int[] temp = {0,2};
+			return temp;
+		}else if(dir == 1) {
+			int[] temp = {1,2};
+			return temp;
+		}else if(dir ==2) {
+			int[] temp = {0,1,2};
+			return temp;
+		}
+		return null;
 	}
 
 	static class Info {
