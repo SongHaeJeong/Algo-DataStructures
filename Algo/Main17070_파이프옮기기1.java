@@ -3,7 +3,12 @@ package Algo;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
-
+/*
+ * BFS로 처음에 풀었는데 시간 초과가 떠서 DFS로 풀었다.
+ * BFS로 풀 때, 중복처리를 잘 못해줘서 그런것 같다....
+ * 
+ * 
+ */
 public class Main17070_파이프옮기기1 {
 	private static int N, result;
 	private static int[][] map;
