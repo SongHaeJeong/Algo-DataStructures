@@ -4,7 +4,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+/*
+ *  시험 당시 못풀었던 문제....
+ *  처음에 팀을 조합으로 나눔
+ *  무조건 2구역으로 나누어야되니깐 1개를 선택하는것부터 5까지만 설정함 
+ *  
+ *  구역을 나눈 후 연결되어있는지 확인작업 필요
+ *  process() 검사하였고 flag 1,2로 나누어서 검사 처음에 나누어서 검사를 진행안했더니 
+ *  한가지 구역에서 1이 되었을 때 모두 checked[idx] true로 만들어주기 때문에 나눠서 검사해야됨
+ *  
+ *  이후 구역을 두가지 나누었으면 Math.min 함수 사용해서 최소값 구함* 
 
+ * 
+ */
 public class Main17471_게리멘더링 {
 	private static int N, ans;
 	private static int[][] area;
@@ -12,6 +24,9 @@ public class Main17471_게리멘더링 {
 	private static boolean[] visited;
 	private static int[] set;
 	private static int[] arr;
+	private static ArrayList<Integer> aList;
+	private static ArrayList<Integer> bList;
+	private static boolean[] checked;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -42,6 +57,11 @@ public class Main17471_게리멘더링 {
 		for (int i = 0; i < arr.length; i++) {
 			arr[i] = i;
 		}
+		
+		/*
+		 * for (int i = 0; i < area.length; i++) { for (int j = 0; j < area.length; j++)
+		 * { System.out.print(area[i][j] + " "); } System.out.println(); }
+		 */
 
 		ans = Integer.MAX_VALUE;
 		for (int i = 1; i <= N - 1; i++) {
@@ -72,11 +92,11 @@ public class Main17471_게리멘더링 {
 
 	}
 
-	// 구역이 두개로 나누워졌는지 안했는지 확인
+	// 두 구역으로 나누기
 	private static void check() {
 		// TODO Auto-generated method stub
-		ArrayList<Integer> aList = new ArrayList<>();
-		ArrayList<Integer> bList = new ArrayList<>();
+		aList = new ArrayList<>();
+		bList = new ArrayList<>();
 
 		for (int i = 0; i < visited.length; i++) {
 			if (!visited[i])
@@ -85,34 +105,16 @@ public class Main17471_게리멘더링 {
 				aList.add(i);
 		}
 
-		// A 구역
-		int setIdx = 0;
-		int startIdx = aList.get(0);
-
-		for (int i = 1; i < aList.size(); i++) {
-
-			if (!visited[aList.get(i)] || area[startIdx][aList.get(i)] != 1) {
-				return;
-			} else
-				startIdx = aList.get(i);
+		checked = new boolean[N];
+		//1구역 검사
+		process(aList.get(0),0,aList.size(), 1);
+		//2구역 검사
+		process(bList.get(0),0,bList.size(), 2);
+		
+		for (int i = 0; i < checked.length; i++) {
+			if(!checked[i]) return;
 		}
-
-		boolean[] flag = new boolean[N];
-		for (int i = 0; i < bList.size(); i++) {
-			flag[bList.get(i)] = true;
-		}
-
-		setIdx = 0;
-		startIdx = bList.get(0);
-
-		for (int i = 1; i < bList.size(); i++) {
-			int b = area[startIdx][i];
-			if (!flag[bList.get(i)] || area[startIdx][bList.get(i)] != 1) {
-				return;
-			} else
-				startIdx = bList.get(i);
-		}
-
+		
 		int aResult = 0;
 		int bResult = 0;
 
@@ -126,6 +128,27 @@ public class Main17471_게리멘더링 {
 		// 결과 구하기
 		ans = Math.min(ans, Math.abs(aResult - bResult));
 
+	}
+
+	private static void process(int start, int idx, int size, int flag) {
+		// TODO Auto-generated method stub
+		checked[start] = true;
+		if(size == 1) return;
+		
+		for (int i = 0; i < N; i++) {
+			if(flag == 1) {
+				if(area[start][i] == 1 && !checked[i] && visited[i]) {
+					process(i, idx+1, size, 1);
+				}		
+				
+			}else {
+				if(area[start][i] == 1 && !checked[i] && !visited[i]) {
+					process(i, idx+1, size, 2);
+				}
+			}
+			
+		}
+			
 	}
 
 }// end of class
