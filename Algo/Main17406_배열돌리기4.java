@@ -5,6 +5,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+/*
+ *  순열로 순서를 정하고 이 후 배열돌리기 실행
+ *  순열을 한 이유는 (3,4,2) , (4,2,1) 최소값과 (4,2,1), (3,4,2) 값이 다르기 떄문
+ *  이 후 조건에 맞게 코드를 구현 
+ * 
+ */
 public class Main17406_배열돌리기4 {
 	private static int N, M, K;
 	private static int[][] map;
