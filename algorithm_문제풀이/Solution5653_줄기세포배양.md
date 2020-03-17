@@ -1,9 +1,26 @@
 ## Solution5653_줄기세포배양
 
-__풀이 1__
+>__풀이 방법__
+>
+>처음에 무한대라고 해서 list를 통해서 해결하려고 했으나, 번식 할 때 조건을 처리하기가 코드도 복잡해지고 시간이 터질거 같아서 배열을 생성함. 배열 크기 계산은 최대로 많이 생성 할 수 있을 때를 계산함. 예를 들어,  모든 줄기 세포 생명력이 1이고 K = 10 이라고 치면 1시간은 활성상태가 되고 1시간은 번식 함 => 번식하는데 2시간이 걸리니깐 여유분으로 N+K, M+K로 생성 시킴
+>
+>
+>
+>status에 따라 상태 변화를 표시함 1 : 비활성, 2 : 활성, 3 : 뒈짐
+>
+>process() 로직
+>
+>1.  활성 상태인거에 대해서 check() 함수 실행
+>   - check() 함수는 기존의 줄기 세포가 존재하면 visited 함수에 의해서 continue; 
+>   - 동시에 번식이 가능하면 크기 비교해서 집어넣음
+>2. queue에서 하나씩 꺼내서 번식
+>3. n.chage() 함수를 통해서 상태 변화
+>
+>
 
 ```java
 package test;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
@@ -11,137 +28,12 @@ import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Solution5653_줄기세포배양 {
-    private static int n, m, k, nx, ny;
-    private static int[][] map;
-    private static boolean[][] visit;
-    private static Queue<Cell> queue = new LinkedList<>();
-    private static final int[] dx = {0, 0, -1, 1};
-    private static final int[] dy = {-1, 1, 0, 0};
-    private static final short DEATH = 0, ACTIVE = 1, INACTIVE = 2;
-
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st;
-
-        int T = Integer.parseInt(br.readLine());
-
-        for (int t = 1; t <= T; t++) {
-            st = new StringTokenizer(br.readLine());
-
-            n = Integer.parseInt(st.nextToken());
-            m = Integer.parseInt(st.nextToken());
-            k = Integer.parseInt(st.nextToken());
-            map = new int[n + k + 2][m + k + 2];
-            visit = new boolean[n + k + 2][m + k + 2];
-            queue.clear();
-
-            int temp;
-            for (int i = k / 2 + 1; i < n + k / 2 + 1; i++) {
-                st = new StringTokenizer(br.readLine());
-                for (int j = k / 2 + 1; j < m + k / 2 + 1; j++) {
-                    temp = Integer.parseInt(st.nextToken());
-                    if (temp != 0) {
-                        map[i][j] = temp;
-                        visit[i][j] = true;
-                        queue.add(new Cell(i, j, temp));
-                    }
-                }
-            }
-
-            int answer = solution();
-            System.out.println("#" + t + " " + answer);
-        }
-    }
-
-    private static int solution() {
-        int count = k;
-        Cell cell;
-        while (count-- > 0) {
-            int len = queue.size();
-            for (Cell c : queue) {
-                if (c.status == ACTIVE) check(c); // 주변에 세포 value 정해줌
-            }
-
-            for (int t = 0; t < len; t++) {
-                cell = queue.poll();
-                if (cell.status == ACTIVE) { // 활성화 상태인 경우만 번식
-                    for (int i = 0; i < 4; i++) { // 상하좌우
-                        nx = cell.x + dx[i];
-                        ny = cell.y + dy[i];
-
-                        if (visit[nx][ny]) continue;
-
-                        queue.add(new Cell(nx, ny, map[nx][ny])); // 번식된 세포 추가
-                        visit[nx][ny] = true; // 방문 처리
-                    }
-                }
-
-                cell.next(); // 세포 상태 변화
-                
-                if (cell.status == DEATH) continue; // 죽은 세포는 queue에서 제외
-                queue.add(cell);
-            }
-        }
-        return queue.size();
-    }
-
-    private static void check(Cell cell) {
-        for (int i = 0; i < 4; i++) {
-            nx = cell.x + dx[i];
-            ny = cell.y + dy[i];
-
-            if (visit[nx][ny]) continue;
-
-            if (map[nx][ny] < cell.value) map[nx][ny] = cell.value;
-        }
-    }
-
-    static class Cell {
-        int x, y;
-        int value, temp;
-        short status;
-
-        public Cell(int x, int y, int value) {
-            this.x = x;
-            this.y = y;
-            this.value = value;
-            this.temp = value;
-            this.status = INACTIVE;
-        }
-
-        public void next() {
-            switch (status) {
-                case INACTIVE: // 비활성화 상태
-                    if (--temp == 0) status = ACTIVE;
-                    break;
-                case ACTIVE: // 활성화 상태
-                    if (++temp == value) status = DEATH;
-                    break;
-            }
-        }
-    }
-}
-```
-
-__풀이 2__
-
-```java
-package test;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.StringTokenizer;
-
-public class Solution5653_줄기세포배양 {
 	private static int T, N, M, K;
 	private static int[][] map;
-	private static ArrayList<Node> list;
-	private static int[] dx = { -1, 0, 1, 0 };
+	private static int[] dx = { -1, 0, 1, 0 }; //상하좌우 탐색을 위한 변수
 	private static int[] dy = { 0, 1, 0, -1 };
+	private static boolean[][] visited;
+	private static Queue<Node> queue;
 
 	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -152,25 +44,26 @@ public class Solution5653_줄기세포배양 {
 			N = Integer.parseInt(st.nextToken());
 			M = Integer.parseInt(st.nextToken());
 			K = Integer.parseInt(st.nextToken());
-			map = new int[N + K][M + K]; // 최대로 커질 수 있는 배열의 크기
-			list = new ArrayList<Node>();
-
-			for (int i = K / 2; i < K / 2 + N; i++) {
+			int ans = 0;
+			map = new int[K  + N][K  + M];
+			visited = new boolean[K  + N][K  + M];
+			queue = new LinkedList<Node>();
+			for (int i = K / 2; i < K/2 + N; i++) {
 				st = new StringTokenizer(br.readLine(), " ");
-				for (int j = K / 2; j < K / 2 + M; j++) {
+				for (int j = K / 2; j < K/2 +M; j++) {
 					map[i][j] = Integer.parseInt(st.nextToken());
-					if (map[i][j] > 0)
-						list.add(new Node(i, j, 1, map[i][j], 0));
+					if (map[i][j] > 0) {
+						visited[i][j] = true;
+						// x, y, 상태 (1 : 비활성) , 활성상태가 되기 위한 시간, 죽는 시간
+						queue.add(new Node(i, j, 1, map[i][j], map[i][j]));
+
+					}
 				}
 			}
-
 			process();
-			int ans = 0;
-			for (Node li : list) {
-				if(li.status != 3) ans++;
-			}
+			ans = queue.size();
 			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
-			
+
 		} // end of testCase
 		System.out.println(sb.toString());
 
@@ -179,123 +72,92 @@ public class Solution5653_줄기세포배양 {
 	private static void process() {
 		int time = 0;
 
-		while (time < K) {
-			time++; // 시간 증가
+		while (time++ < K) {
+			int size = queue.size();
 
-			// list에서 deadTime 하나씩 증가
-			for (Node li : list) {
-				if(li.status != 3) {
-					li.deadTime++;
-				}
-			}
-
-			// 상태중에서 활성상태인것은 1시간 동안 상,하,좌,우 네방향으로 동시에 번식
-			// 번식된 것은 비활성 상태
-			// 번식할 수 있는 리스트를 addList에 저장
-			LinkedList<Node> addList = new LinkedList<>(); // 삽입, 삭제는 LinkedList 더 빠름
-			for (Node n : list) {
-				// 한 시간만 번식 가능
-				if (n.status == 2 && n.deadTime == 1) {
-					for (int i = 0; i < dx.length; i++) {
-						int nx = n.row + dx[i];
-						int ny = n.column + dy[i];
-						// 번식할 위치에 기존의 세포가 존재하면 추가적으로 번식 X
-						if (map[nx][ny] == 0) {							
-							addList.add(new Node(nx, ny, 1, n.liveTime, 0));
-						}
-					}
-				}
-			}
-
-			// 동시에 번식하려고 하는 경우 생명력 수치가 높은 줄기 세포 해당 그리드 셀 차지
-			if(addList.size() > 0) {
-				Collections.sort(addList);
-				LinkedList<Node> deleteList = new LinkedList<>();
-				Iterator<Node> it = addList.iterator();
-				Node no = null;
-				while (it.hasNext()) {
-
-					if (no == null) {
-						no = it.next();
-						continue;
-					}
-
-					Node temp = it.next();
-					if (no.row == temp.row && no.column == temp.column && no.liveTime >= temp.liveTime) {
-						deleteList.add(temp);
-					} else {
-						no = temp;
-					}
-
-				}
-
-				it = deleteList.iterator();
-				// 삭제
-				while (it.hasNext()) {
-					addList.remove(it.next());
-				}
-
-				it = addList.iterator();
-				//맵에 표시해주고 list에 저장
-				while(it.hasNext()) {
-					Node n = it.next();
-					map[n.row][n.column] = n.liveTime;
-					list.add(n);
-					
+			
+			for (Node n : queue) {
+				if (n.status == 2) {
+					check(n); // 동시에 번식이 가능하나 생명력이 가장 큰 세포 번식해주기 위해서 실행
 					
 				}
 			}
+			
+			// 번식 실행
+			for (int i = 0; i < size; i++) {
+				Node n = queue.poll();
+				if (n.status == 2) {
+					for (int j = 0; j < dx.length; j++) {
+						int nx = n.row + dx[j];
+						int ny = n.column + dy[j];
 
-			// 시간에 따른 상태 변화 시켜주기
-			for (Node n : list) {
-				if(n.status == 1 && n.deadTime == n.liveTime) {
-					// 활성화 상태로 변화 해주고 deadTime을 0으로 리셋해주는 이유는 죽을 시간 체크해주기
-					n.status =2;
-					n.deadTime = 0;
-				}else if(n.status == 2 && n.deadTime == n.liveTime) {
-					n.status = 3; // 죽음
+						if (visited[nx][ny])
+							continue;
+						queue.add(new Node(nx, ny, 1, map[nx][ny], map[nx][ny]));
+						visited[nx][ny] = true;
+					}
 				}
+
+				n.chage(); // 번식 후 상태 변화
+				if(n.status == 3) continue;
+				queue.add(n);
+
 			}
-			
-			
 
 		}
 
 	}// end of process();
 
-	static class Node implements Comparable<Node> {
-		int row, column, status, liveTime, deadTime;
+	private static void check(Node n) {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < dx.length; i++) {
+			int nx = n.row + dx[i];
+			int ny = n.column + dy[i];
 
-		public Node(int row, int column, int status, int liveTime, int deadTime) {
+			if (visited[nx][ny])
+				continue;
+			if (map[nx][ny] < n.life)
+				map[nx][ny] = n.life;
+		}
+
+	}
+
+	static class Node {
+		int row, column, status, life, deathTime;
+
+		public Node(int row, int column, int status, int life, int deathTime) {
 			super();
 			this.row = row;
 			this.column = column;
 			this.status = status;
-			this.liveTime = liveTime;
-			this.deadTime = deadTime;
+			this.life = life;
+			this.deathTime = deathTime;
+		}
+		
+		// status 1 : 비활성 상태 , 2 : 활성 상태 , 3 : 죽음
+		public void chage() {
+			// TODO Auto-generated method stub
+			switch (status) {
+			case 1: // 비활성화 상태
+				if (--deathTime == 0)
+					status = 2;
+				break;
+			case 2: // 활성화 상태
+				if (++deathTime == life)
+					status = 3;
+				break;
+			}
 		}
 
 		@Override
 		public String toString() {
-			return "Node [row=" + row + ", column=" + column + ", status=" + status + ", liveTime=" + liveTime
-					+ ", deadTime=" + deadTime + "]";
-		}
-
-		@Override
-		public int compareTo(Node o) {
-			if (this.row != o.row ) {
-				return this.row - o.row;
-			}else if(this.row == o.row && this.column != o.column) {
-				return this.column - o.column;
-			}else if (this.row == o.row && this.column == o.column && this.liveTime != o.liveTime) {
-				return o.liveTime - this.liveTime;
-			}
-
-			return 1;
+			return "Node [row=" + row + ", column=" + column + ", status=" + status + ", life=" + life + ", deathTime="
+					+ deathTime + "]";
 		}
 
 	}
 }// end of class
 
 ```
+
 
