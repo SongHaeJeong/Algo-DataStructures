@@ -18,7 +18,7 @@
 >
 >   3.  접수 창구에 대한 로직 처리
 >
->      
+> ​     
 >
 >__코드를 보면서 이해하면 더 쉽게 이해 될 것이다.__
 
@@ -77,19 +77,19 @@ public class Solution2477_차량정비소 {
 			}
 
 			ans = 0; // 최종 답 출력			
-			Solution();
+			solution();
 			if (ans == 0) {
 				ans = -1;
 			}
 
 			System.out.println("#" + tc + " " + ans);
 
-		}
+		}//end of testCase
 
-	}
+	}//end of main
 	
 
-	private static void Solution() {
+	private static void solution() {
 		// TODO Auto-generated method stub
 		Queue<Customer> waitAi = new LinkedList<>(); //접수 창구를 기다리는 정보
 		Queue<Customer> waitBj = new LinkedList<>(); //정비 창구를 기다리는 정보
@@ -159,7 +159,7 @@ public class Solution2477_차량정비소 {
 				ans += end.get(i).c_num;
 			}
 		}
-	}
+	}//end of solution
 
 
 	static class Customer {
@@ -185,7 +185,7 @@ public class Solution2477_차량정비소 {
 		
 		
 	}
-}
+}//end of class
 	
 ```
 
