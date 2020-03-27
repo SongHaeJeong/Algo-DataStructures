@@ -98,6 +98,8 @@ public class Main {
 
 ```
 
+__배열을 이진검색트리로 만들기__
+
 __Binary Heaps__
 
 >- 최대 힙
@@ -127,7 +129,27 @@ __Trie (트라이)__
 
 >문자열에서 검색을 빠르게 도와주는 자료구조
 >
+
+
+
+__Graph__
+
+>__표현 방법__
 >
+>- Adjacency Matrix : 배열을 이용해서 나타냄
+>- Adjacency List : LinkedList를 이용해서 나타냄
+
+>__검색 방법__
+>
+>__Depth-Frist Search(DFS)__ : Stack
+>
+>- inorder
+>- preorder
+>- postorder  
+>
+>__Breadth-First-Search(BFS)__ : Queue
+
+
 
 
 
