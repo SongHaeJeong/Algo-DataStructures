@@ -1,6 +1,10 @@
-## Programmers_스킬트리
+Programmers_스킬트리
 
 >__문제 풀이__
+>
+>처음 코드 3중 포문, 2번째 코드 2중 for문 
+>
+>처음 작성한 코드는 3중 for문이여서 입력값이 커지면 시간 초과가 발생할 것 같아서 2번째 코드를 작성
 
 
 
@@ -44,6 +48,37 @@ class Solution {
             }           
         }                      
         
+        return answer;
+    }
+}
+```
+
+```java
+import java.util.*;
+class Solution {
+    public int solution(String skill, String[] skill_trees) {
+        int answer = 0;
+        
+        for(String skillTree : skill_trees){
+            int startIdx = 0 ;
+            boolean flag = true;
+            for(char ch : skillTree.toCharArray()){
+                int idx = skill.indexOf(ch);
+                
+                if(idx == -1) continue;
+                else if(startIdx == idx){
+                    startIdx++;                    
+                }else{
+                    flag = false;
+                    break;
+                }
+                
+                
+            }          
+            
+            if(flag) answer++;
+            
+        }                         
         return answer;
     }
 }
