@@ -1,6 +1,18 @@
 ## Solution2383_점심식사시간
 
->테스트케이스 44개에서 틀렸다.... 다시 한 번 풀어봐야되겠다
+>__문제 풀이__
+>
+>테스트케이스 44, 48개까지 맞추고 로직을 새로 수정해서 간신히 pass 했다.
+>
+>1. 중복조합을 통해서 계단 2개에 대해서 사람들이 올 수 있는 모든 경우의 수를 정함
+>
+>2. 우선순위 큐를 생성해서 time, 몇번째의 계단, 상태를 설정 (상태 => -1 : 도착 전 , 0 : 도착, 1 : 내려가기 시작)
+>
+>3. 우선순위 큐의 compareTo 함수를 보면 시간순서대로 정렬하되 시간이 같으면 상태번호가 높은 순으로 정렬했다. 그 이유는 가장 먼저 계단에 도착하는거에 대해서 로직을 실행하되 한 계단에 3명의 인원만 내려갈 수 있기 때문이다.
+>
+>4. 주의할 점 : 계단이 도착한 후 1분 이후에 내려가기 시작
+>
+>   ​					계단에 대기하고 있는 상태에서 내려갈 수 있으면 바로 내려가기 시작.
 >
 >
 
@@ -8,187 +20,151 @@
 package test;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 import java.util.StringTokenizer;
+
 /*
  *  문제 풀이 :
  *  사람이 갈 수 있는 계단입구에 대해서 배치
  *  배치 한 후 모두 내려왔으면 최소값 계산
+ *  계단은 무조건 2개, 위치가 겹치지 않는다
  */
 public class Solution2383_점심식사시간 {
-	private static int N, ans;
 	private static int[][] map;
+	private static int N, ans;
 	private static ArrayList<Node> people;
-	private static Node[] stairs;
-	private static int[] set;
-	private static int[] peopleSet;	 
-	public static void main(String[] args) throws NumberFormatException, IOException {
+	private static Node[] stair;
+
+	public static void main(String[] args) throws Exception {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		int T = Integer.parseInt(br.readLine());
-		StringBuilder sb = new StringBuilder();
-		for (int testCase = 1; testCase <= T; testCase++) {
-			ans = Integer.MAX_VALUE; // 최소 시간을 출력하기 위한 변수
-			N = Integer.parseInt(br.readLine().trim()); // 맵의 크기
-			map = new int[N][N]; // 사람과 계단 정보 표시한 배열
-			people = new ArrayList<Node>(); // 사람 위치에 대한 정보 저장
-			StringTokenizer st;			
-			stairs = new Node[2]; // 계단에 대한 정보 저장
+
+		for (int tc = 1; tc <= T; tc++) {
+			N = Integer.parseInt(br.readLine());
+			ans = Integer.MAX_VALUE;
+			map = new int[N][N];
+			StringTokenizer st;
+			people = new ArrayList<Node>();
+			stair = new Node[2];
 			int idx = 0;
-			int cnt = 0;
 			for (int i = 0; i < map.length; i++) {
 				st = new StringTokenizer(br.readLine(), " ");
 				for (int j = 0; j < map.length; j++) {
-					map[i][j] = Integer.parseInt(st.nextToken()); // 정보 입력
-					if(map[i][j] == 1) {
-						cnt++;
-						people.add(new Node(i,j,-1,0));
-					}
-					else if(map[i][j] > 1) stairs[idx++] = new Node(i,j,-1,map[i][j]); 
+					map[i][j] = Integer.parseInt(st.nextToken());
+					if (map[i][j] == 1)
+						people.add(new Node(i, j));
+					if (map[i][j] > 1)
+						stair[idx++] = new Node(i, j);
 				}
 			}
-			
-			peopleSet = new int[cnt];
-			for(int i = 0; i < peopleSet.length; i++) {
-				peopleSet[i] = i;
-			}
-			
-			for(int i = 0; i < peopleSet.length; i++) {
-				set = new int[i];
-				combination(0, 0, i);
-			}
-			
-			process(-1);
-			
-			
-			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
-		} // end of testCase
-		System.out.println(sb.toString());
+			set = new int[people.size()];
+			splitPeople(0);
+			System.out.println("#" + tc + " " + ans);
+		} // end of tc
+		
 	}// end of main
-	
-	
-	private static void combination(int idx, int k, int s) {
+
+	private static int[] set;
+	private static PriorityQueue<Pair> pq;
+
+	private static void splitPeople(int dep) {
 		// TODO Auto-generated method stub
-		if(idx == s) {
-			process(s);
+		if (dep == people.size()) {
+			pq = new PriorityQueue<>();
+			for (int i = 0; i < set.length; i++) {
+				int row = people.get(i).row;
+				int column = people.get(i).column;
+				int stairRow = stair[set[i]].row;
+				int stairColumn = stair[set[i]].column;
+				int diff = Math.abs(stairRow - row) + Math.abs(stairColumn - column);
+				pq.add(new Pair(diff, set[i], -1));
+			}
+			move(); // 어디의 계단으로 갈지에 대해서 정하고 실제 움직임
 			return;
 		}
-		for(int i = k ; i < peopleSet.length; i++) {
-			set[idx] = peopleSet[i];
-			combination(idx+1, i+1, s);
+
+		for (int i = 0; i < stair.length; i++) {
+			set[dep] = i;
+			splitPeople(dep + 1);
 		}
+
 	}
 
-
-	private static void process(int num) {
-		boolean[] splitTeam = new boolean[peopleSet.length];
-		if(num != 0) {
-			for(int i = 0; i < set.length; i ++) {
-				splitTeam[set[i]] = true; // true인 인덱스가 1번 입구 false인 인덱스가 2번 입구
-			}
-			
-		}else if(num == 0) {
-			for (int i = 0; i < splitTeam.length; i++) {
-				splitTeam[i] = true;
-			}
-		}
-		Queue<Integer> firstStair = new LinkedList<Integer>(); // 첫 번째 계단
-		Queue<Integer> secondStair = new LinkedList<Integer>(); // 두 번째 계단
-		Queue<Node> waitStair = new LinkedList<Node>(); //세 번째 계단
-		
-		for(int i = 0; i < splitTeam.length; i ++) {
-			if(splitTeam[i]) waitStair.add(new Node(people.get(i).row, people.get(i).column, 0, 0));
-			else waitStair.add(new Node(people.get(i).row, people.get(i).column, 1, 0));
-		}
+	private static void move() {
+		// TODO Auto-generated method stub
+		int[] inStair = new int[stair.length];
 		int time = 0;
-		
-		while(!waitStair.isEmpty() || !firstStair.isEmpty() || !secondStair.isEmpty()) {
+		while (!pq.isEmpty()) {
 			time++;
 			
-			if(!firstStair.isEmpty()) {
-				int size = firstStair.size();
-				for(int i = 0; i < size; i++) {
-					int desendTime = firstStair.poll();
-					if(desendTime < stairs[0].time ) {
-						firstStair.add(desendTime+1);
-					}
-						
-					
-				}
-			}
-			
-			if(!secondStair.isEmpty()) {
-				int size = secondStair.size();
-				for(int i = 0; i< size; i++) {
-					int desendTime = secondStair.poll();
-					if(desendTime < stairs[1].time) {
-						secondStair.add(desendTime+1);
-					}
-				}
-			}
-			
-			if(!waitStair.isEmpty()) {
+			while(!pq.isEmpty()) {
+				Pair front = pq.peek();
+				if(front.time != time) break;
+				pq.poll();
+				int myStair = front.stair;
 				
-				int size = waitStair.size();
-				
-				for(int i = 0; i < size ; i++) {
-					Node n = waitStair.poll();
-					if(n.selelctNum == 0) {
-						if(Math.abs(stairs[0].row - n.row) + Math.abs(stairs[0].column - n.column) <= time && firstStair.size() < 3) {
-							firstStair.add(0);
-						}else {
-							waitStair.add(n);
+				if(front.status != 1) { //계단 아직 안감
+					//계단에 내려갈 수 있는지 체크
+					if(inStair[myStair] < 3) {
+						int nTime = 0;
+						if(front.status == -1) {
+							nTime = front.time + 1 + map[stair[myStair].row][stair[myStair].column];
+						}else if(front.status == 0) { // 입구에 대기하고 있으면 
+							nTime = front.time + map[stair[myStair].row][stair[myStair].column];
 						}
+						pq.add(new Pair(nTime, front.stair, 1));
+						inStair[myStair]++;					
+					}else { // 계단이 포화라서 못내려가는 상태라면 상태를 0으로 변화
+						pq.add(new Pair(front.time +1, myStair, 0));
 						
-						
-					}else if(n.selelctNum == 1){
-						if(Math.abs(stairs[1].row - n.row) + Math.abs(stairs[1].column - n.column) <= time && secondStair.size() < 3) {
-							secondStair.add(0);
-						}else {
-							waitStair.add(n);
-						}
-					}
+					}					
+				}else {
+					inStair[myStair]--;
 				}
-				
-				
 			}
-			
-			
-			
-			
-			
-			
+				
 		}
-		
 		ans = ans > time ? time : ans;
-		
-		
 	}
 
 	static class Node{
-		int row, column,selelctNum,time; 
+		int row, column;
+	
 
-		public Node(int row, int column, int selectNum , int time) {
+		public Node(int row, int column) {
 			super();
 			this.row = row;
 			this.column = column;
-			this.selelctNum = selectNum;
-			this.time = time;
-		}
+		}		
 
-		@Override
-		public String toString() {
-			return "Node [row=" + row + ", column=" + column + ", selelctNum=" + selelctNum + ", time=" + time + "]";
-		}
-		
-		
-
-	
-		
 	}
+	
+	 static class Pair implements Comparable<Pair> {
+	        int time;
+	        int stair;
+	        int status;
+	 
+	        public Pair(int time, int stair, int status) {
+	            super();
+	            this.time = time;
+	            this.stair = stair;
+	            this.status = status;
+	        }
+	 
+	        @Override
+	        public int compareTo(Pair o) {
+	            // TODO Auto-generated method stub
+	            if (this.time == o.time) {
+	                return o.status - this.status;
+	            } else {
+	                return this.time - o.time;
+	            }
+	        }
+	 
+	    }
+
 }// end of class
 
 ```
