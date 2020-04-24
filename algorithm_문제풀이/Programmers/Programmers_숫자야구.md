@@ -7,7 +7,7 @@
 
 
 
-```java
+```
 import java.util.*;
 class Solution {
     static int answer;
