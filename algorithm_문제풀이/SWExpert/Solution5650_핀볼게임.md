@@ -61,7 +61,7 @@ public class Solution5650_핀볼게임 {
 				for (int j = 0; j < map.length; j++) {
 					map[i][j] = Integer.parseInt(st.nextToken());
 					if (map[i][j] >= 6)
-						warmHole.add(new Node(i, j, map[i][j]));
+						warmHole.add(new Node(i, j, map[i][j])); //웜홀의 위치 저장
 					if (map[i][j] == 0)
 						ball.add(new Node(i, j)); // 핀볼 위치 모두 저장
 				}
