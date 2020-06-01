@@ -7,8 +7,14 @@
 >벽돌 깰 때, DFS(map)을 가지고 다님
 >
 >BFS를 통해 벽돌을 깸
+
+
+
+>__재풀이__
 >
->
+>처음 풀이와 비슷하나, DFS(Map)을 가지고 다니지 않고 2차원 배열 temp를 생성해주고 DFS가 끝나면 temp를 map으로 이동해줌.
+
+
 
 ```java
 package test;
@@ -204,6 +210,182 @@ public class Solution5656_벽돌깨기 {
 
 	}
 
+}// end of class
+
+```
+
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
+
+public class Solution5656_벽돌깨기 {
+	private static int N, W, H,ans;
+	private static int[][] map;
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
+		for (int testCase = 1; testCase <= T; testCase++) {
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			N = Integer.parseInt(st.nextToken());
+			W = Integer.parseInt(st.nextToken());
+			H = Integer.parseInt(st.nextToken());
+
+			map = new int[H][W];
+			for (int i = 0; i < map.length; i++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				for (int j = 0; j < map[0].length; j++) {
+					map[i][j] = Integer.parseInt(st.nextToken());
+				}
+			}
+			ans = Integer.MAX_VALUE;
+//			remove(1,2);
+//			remove(2,2);
+//			remove(8,6);
+			
+			
+			select(0);
+			if(ans == Integer.MAX_VALUE) ans = 0;
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+
+		} // end of testCase;
+		System.out.println(sb.toString());
+
+	}// end of main
+
+	private static void select(int idx) {
+		// TODO Auto-generated method stub
+		if (idx == N) {
+			int cnt = 0 ;
+			for (int i = 0; i < map.length; i++) {
+				for (int j = 0; j < map[0].length; j++) {
+					if(map[i][j] > 0) cnt++;
+				}
+			}
+			
+			ans = ans > cnt ? cnt : ans;
+			return;
+		}
+
+		int[][] temp = new int[H][W];
+		for (int i = 0; i < map.length; i++) {
+			System.arraycopy(map[i], 0, temp[i], 0, map[i].length);
+		}
+
+		for (int i = 0; i < W; i++) {
+
+			int row = 0;
+			while (row < H) {
+				if(map[row][i] == 0) row++;
+				else break;
+			}
+			
+			if(row == H) continue;
+			
+			remove(row, i);
+//			print();
+//			System.out.println("=========================");
+			select(idx + 1);
+			for (int j = 0; j < map.length; j++) {
+				System.arraycopy(temp[j], 0, map[j], 0, map[j].length);
+			}
+//			print();
+//			System.out.println("=========================");
+
+		}
+	}
+
+	private static void print() {
+		// TODO Auto-generated method stub
+		for (int i = 0; i < map.length; i++) {
+			for (int j = 0; j < map.length; j++) {
+				System.out.print(map[i][j]+" ");
+			}
+			System.out.println();
+		}
+	}
+
+	private static int[] dx = { -1, 0, 1, 0 };
+	private static int[] dy = { 0, -1, 0, 1 };
+
+	private static void remove(int row, int column) {
+		// TODO Auto-generated method stub
+		
+		Queue<Node> queue = new LinkedList<Node>();
+		queue.add(new Node(row, column, map[row][column]));
+		map[row][column] = 0;
+		while (!queue.isEmpty()) {
+			Node n = queue.poll();
+			int len = n.num-1;
+			for (int i = 0; i < dx.length; i++) {
+				int x = n.row;
+				int y = n.column;
+
+				for (int j = 1; j <= len; j++) {
+
+					int nx = x + dx[i] * j;
+					int ny = y + dy[i] * j;
+
+					if (nx < 0 || ny < 0 || nx >= H || ny >= W || map[nx][ny] == 0 ) continue;
+					queue.add(new Node(nx, ny, map[nx][ny]));
+					map[nx][ny] = 0;
+
+				}
+
+			}
+
+		}
+		
+		Queue<Integer> moveQueue = new LinkedList<Integer>();
+		for(int i = 0 ; i < W; i++) {
+			int idx = H;
+			
+			while(idx > 0) {
+				idx--;	
+				if(map[idx][i] > 0) {
+					moveQueue.add(map[idx][i]);
+					map[idx][i] = 0;
+				}
+				
+				
+			}
+			
+			idx = H-1;
+			
+			while(!moveQueue.isEmpty()) {
+				map[idx][i] = moveQueue.poll();
+				idx--;
+			}
+			
+			
+		}
+		
+		
+		
+	}
+
+	static class Node {
+		int row, column, num;
+
+		public Node(int row, int column, int num) {
+			super();
+			this.row = row;
+			this.column = column;
+			this.num = num;
+		}
+
+		@Override
+		public String toString() {
+			return "Node [row=" + row + ", column=" + column + ", num=" + num + "]";
+		}
+
+	}
 }// end of class
 
 ```
