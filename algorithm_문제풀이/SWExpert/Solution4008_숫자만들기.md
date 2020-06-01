@@ -75,3 +75,73 @@ public class Solution4008_숫자만들기 {
 		
 ```
 
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Solution4008_숫자만들기 {
+	private static int N, minNum, maxNum;
+	private static int ans;
+	private static int[] command;
+	private static int[] num;
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
+		for (int testCase = 1; testCase <= T; testCase++) {
+			N = Integer.parseInt(br.readLine());
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			command = new int[4];
+			num = new int[N];
+			minNum = Integer.MAX_VALUE;
+			maxNum = Integer.MIN_VALUE;
+			for (int i = 0; i < 4; i++) {
+				command[i] = Integer.parseInt(st.nextToken());				
+			}
+			st = new StringTokenizer(br.readLine(), " ");
+			for (int i = 0; i < num.length; i++) {
+				num[i] = Integer.parseInt(st.nextToken());
+			}
+			
+			dfs(0, num[0]);
+			sb.append("#").append(testCase).append(" ").append(maxNum - minNum).append("\n");
+			
+		}
+		System.out.println(sb.toString());
+		
+	}//end of main
+	private static void dfs(int idx, int value) {
+		// TODO Auto-generated method stub
+		if(idx == N-1) {
+			minNum = minNum > value ? value : minNum;
+			maxNum = maxNum < value ? value : maxNum;
+			return;
+		}
+		
+		for (int i = 0; i < command.length; i++) {
+			if(command[i] > 0) {
+				command[i]--;
+				
+				if(i == 0 ) {
+					dfs(idx+1, value + num[idx+1]);
+				}else if(i == 1) {
+					dfs(idx+1, value - num[idx+1]);
+				}else if(i == 2) {
+					dfs(idx+1, value * num[idx+1]);
+				}else if(i == 3) {
+					dfs(idx+1, value / num[idx+1]);
+				}
+				
+				command[i]++;			
+				
+			}
+		}
+	}
+}//end of class
+
+```
+
