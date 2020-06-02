@@ -8,6 +8,10 @@
 
 
 
+>__재풀이 시간__ : 36분
+>
+>로직을 생각하기 쉬운데 코딩 구현할게 많은 문제
+
 ```java
 package test;
 
@@ -135,6 +139,130 @@ public class Solution4013_특이한자석 {
 	}
 
 }// end of class
+
+```
+
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Solution4013_특이한자석 {
+	private static int ans;
+	private static int[][] gear;
+	private static int[][] command;
+	private static int[] check ;
+
+	public static void main(String[] args) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		
+		for (int testCase = 1; testCase <= T; testCase++) {
+			int K = Integer.parseInt(br.readLine()); 
+			
+			gear = new int[4][8];
+			StringTokenizer st;
+			for (int i = 0; i < gear.length; i++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				for (int j = 0; j < gear[i].length; j++) {
+					gear[i][j] = Integer.parseInt(st.nextToken());
+				}
+			}
+			
+			command = new int[K][2];
+			
+			for (int i = 0; i < K; i++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				for (int j = 0; j < 2; j++) {
+					command[i][j] = Integer.parseInt(st.nextToken());
+				}
+			}
+			
+			ans = 0;
+			solution();
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+		}
+		System.out.println(sb.toString());
+		
+	}//end of main
+
+	private static void solution() {
+		for (int i = 0; i < command.length; i++) {
+			int selectGear = command[i][0];
+			int dir = command[i][1];
+			checkRotate(selectGear-1, dir);
+			print();
+			System.out.println("========================돌리기전");
+			rotate();
+			print();
+			System.out.println("========================돌리기후");
+		}
+		
+		for (int i = 0; i < gear.length; i++) {
+			if(gear[i][0] == 1) ans+= 1 << i;
+		}
+	}
+	private static void print() {
+		for (int i = 0; i < gear.length; i++) {
+			for (int j = 0; j < gear[0].length; j++) {
+				System.out.print(gear[i][j] + " ");
+			}
+			System.out.println();
+		}
+	}
+
+	private static void rotate() {
+		for (int i = 0; i < gear.length; i++) {
+			if(check[i] == 1) { //시계방향
+				int temp = gear[i][gear[0].length-1];
+				for (int j = gear[0].length-1; j > 0; j--) {
+					gear[i][j] = gear[i][j-1];
+				}
+				
+				gear[i][0] = temp;
+			}else if(check[i] == -1) {
+				
+				int temp = gear[i][0];
+				for (int j = 0; j < gear[0].length-1; j++) {
+					gear[i][j] = gear[i][j+1];
+				}
+				
+				gear[i][7] = temp;
+				
+				
+				
+			}
+		}
+		
+	}
+
+	private static void checkRotate(int selectGear, int dir) {
+		check = new int[4];
+		check[selectGear] = dir;
+		int checkDir = dir;
+		for(int i = selectGear ; i < 3; i++) {
+			if(gear[i][2] != gear[i+1][6]) {
+				check[i+1] = checkDir == 1 ? -1 : 1;
+				checkDir = check[i+1];
+			}
+			else break;			
+		}
+		
+		checkDir = dir;
+		
+		for (int i = selectGear; i > 0; i--) {
+			if(gear[i][6] != gear[i-1][2]) {
+				check[i-1] = checkDir == 1 ? -1 : 1;
+				checkDir = check[i-1];
+			}
+			else break;
+		}
+	}
+}//end of class
 
 ```
 
