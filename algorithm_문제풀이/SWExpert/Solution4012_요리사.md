@@ -6,6 +6,8 @@
 >
 > 두번째 : 나누어가진 요리에 대해서 2개씩 나누어짐 예를 들어, A 재료가 0 , 1 , 2 가지고 있으면 이거에 대해서 (0,1), (1,0), (1,2) (2,1) (0,2) (2,0) 계산하기 위해서 조합 사용
 
+재풀이 시간 : 20분
+
 ```java
 package test;
 
@@ -121,5 +123,102 @@ public class Solution4012_요리사 {
 	}
 }// end of class
 
+```
+
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Solution4012_요리사 {
+	private static int N, ans;
+	private static int[][] food;
+	private static int[] A;
+	private static int[] B;
+	private static int[] set = new int[2];
+	private static int aTotal;
+	private static int bTotal;
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
+		for (int testCase = 1; testCase <= T; testCase++) {
+			N = Integer.parseInt(br.readLine());
+			food = new int[N][N];
+			for (int i = 0; i < food.length; i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+				for (int j = 0; j < food.length; j++) {
+					food[i][j] = Integer.parseInt(st.nextToken());
+				}
+			}
+
+			A = new int[N / 2];
+			B = new int[N / 2];
+			ans = Integer.MAX_VALUE;
+			split(0, 0);
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+		}
+		System.out.println(sb.toString());
+	}// end of main
+
+	private static void split(int idx, int k) {
+		// TODO Auto-generated method stub
+		if (idx == N / 2) {
+			process();
+			return;
+		}
+
+		for (int i = k; i < N; i++) {
+			A[idx] = i;
+			split(idx + 1, i + 1);
+		}
+		
+		
+	}
+
+	private static void process() {
+		// TODO Auto-generated method stub
+		boolean[] visited = new boolean[N];
+		for (int i = 0; i < A.length; i++) {
+			visited[A[i]] = true;
+		}
+		int bIdx = 0;
+		for (int i = 0; i < visited.length; i++) {
+			if (!visited[i])
+				B[bIdx++] = i;
+		}
+		aTotal = 0;
+		bTotal = 0;
+		makeRecipe(A, 0, 0, 0);
+		makeRecipe(B, 0, 0, 1);
+		
+		ans = Math.min(ans, Math.abs(aTotal - bTotal));
+
+	}
+
+	private static void makeRecipe(int[] a2, int idx, int k, int type) {
+		if(idx == 2) {
+			if(type == 0) {
+				aTotal += food[set[0]][set[1]];
+				aTotal += food[set[1]][set[0]];
+			}else {
+				bTotal += food[set[0]][set[1]];
+				bTotal += food[set[1]][set[0]];
+			}
+			
+			return;
+		}
+		
+		for (int i = k; i < a2.length; i++) {
+			set[idx] = a2[i];
+			makeRecipe(a2, idx+1, i+1, type);
+		}
+	}
+}// end of class
+	
 ```
 
