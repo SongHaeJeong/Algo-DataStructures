@@ -10,6 +10,14 @@
 
 
 
+>__재풀이 시간__
+>
+>30분
+>
+>- 가지치기를 안해줬더니 시간초과 발생했음.
+
+
+
 ```java
 package test;
 
@@ -113,4 +121,93 @@ public class Solution2112_보호필름 {
 ```
 
 
+
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
+import java.util.StringTokenizer;
+
+public class Solution2112_보호필름 {
+	private static int ans;
+	private static int D, W, K;
+	private static int[][] map;
+	public static void main(String[] args) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		int T = Integer.parseInt(br.readLine());
+		for (int testCase = 1; testCase <= T; testCase++) {
+			ans = Integer.MAX_VALUE;
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			D = Integer.parseInt(st.nextToken());
+			W = Integer.parseInt(st.nextToken());
+			K = Integer.parseInt(st.nextToken());
+			
+			map = new int[D][W];
+			for (int i = 0; i < map.length; i++) {
+				st = new StringTokenizer(br.readLine(), " ");
+				for (int j = 0; j < map[0].length; j++) {
+					map[i][j] = Integer.parseInt(st.nextToken());
+				}
+			}
+			
+			dfs(0,0,map);
+			
+			
+			
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+		}
+		System.out.println(sb.toString());
+	}//end of main
+	private static void dfs(int idx, int count, int[][] prev) {
+		if(ans <= count) return;
+		// TODO Auto-generated method stub
+		if(idx == D ) {
+			if(check(prev)) {
+				ans = ans > count ? count : ans;
+			}
+			return;			
+		}
+		
+	    int[][] temp = new int[D][W];
+        for (int i = 0; i < D; i++) {
+        	temp[i] = Arrays.copyOf(prev[i], prev[i].length); // 이전의 값을 복사하여 계산        	
+        }
+		
+		dfs(idx +1 , count, temp);
+		
+		Arrays.fill(temp[idx], 0);
+		dfs(idx+1, count+1, temp);
+		Arrays.fill(temp[idx], 1);
+		dfs(idx+1, count+1, temp);
+	}
+	private static boolean check(int[][] prev) {
+		boolean flag = true;
+		for (int i = 0; i < W; i++) {
+			
+			int count = 1;
+			for (int j = 0; j < D-1; j++) {
+				if(prev[j][i] == prev[j+1][i]) {
+					count++;
+					if(count >= K) break;
+				}else {
+					count = 1;
+				}
+				
+			}
+			
+			if(count < K) {
+				flag = false;
+				break;
+			}
+		}
+		return flag;
+	}
+}//end of class
+	
+```
 
