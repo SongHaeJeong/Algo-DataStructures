@@ -169,3 +169,178 @@ public class Solution2383_점심식사시간 {
 
 ```
 
+```java
+package reTest;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
+
+public class Solution2383_점심식사시간 {
+   private static int N , ans;
+   private static int[][] map;
+   private static ArrayList<Node> sList;
+   private static ArrayList<People> people;
+   private static int[] set;
+   public static void main(String[] args) throws Exception {
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      int T = Integer.parseInt(br.readLine());
+      StringBuilder sb = new StringBuilder();
+      for (int testCase = 1; testCase <= T; testCase++) {
+         N = Integer.parseInt(br.readLine());
+         ans = Integer.MAX_VALUE;
+         map = new int[N][N];
+         sList = new ArrayList<Node>();
+         people = new ArrayList<People>();
+         StringTokenizer st ;
+         for (int i = 0; i < map.length; i++) {
+            st = new StringTokenizer(br.readLine(), " ");
+            for (int j = 0; j < map.length; j++) {
+               map[i][j] = Integer.parseInt(st.nextToken());
+               if(map[i][j] > 1) sList.add(new Node(i, j , map[i][j]));
+               if(map[i][j] == 1) people.add(new People(i,j, 0, 0 ));
+            }
+         }
+         
+         set = new int[people.size()];
+         select(0);
+         sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+         
+      }
+      System.out.println(sb.toString());
+   }//end of main
+   
+   private static void select(int idx) {
+      // TODO Auto-generated method stub
+      if(idx == set.length) {
+         solution();
+         return;
+      }
+      
+      for (int i = 0; i < sList.size(); i++) {
+         set[idx] = i;
+         select(idx+1);
+      }
+   }
+
+   private static void solution() {
+      // TODO Auto-generated method stub
+      int[] st = new int[2];
+      PriorityQueue<Stair> pq = new PriorityQueue<>(new Comparator<Stair>() {
+
+         @Override
+         public int compare(Stair o1, Stair o2) {
+            // TODO Auto-generated method stub
+            if(o1.time == o2.time) {
+               return o2.status - o1.status;
+            }else {
+               return o1.time - o2.time;
+            }
+         }
+      });
+      for (int i = 0; i < set.length; i++) {
+         int num = set[i];
+         int diffLen = Math.abs(people.get(i).row - sList.get(num).row) + Math.abs(people.get(i).column - sList.get(num).column);
+         pq.add(new Stair(num, diffLen, -1));
+         
+      }
+      
+      int time = 0;
+      while(!pq.isEmpty()) {
+         time++;
+         
+         while(!pq.isEmpty()) {
+            Stair s = pq.peek();   
+            if(time != s.time) break;
+            pq.poll();
+            int stair = s.stairNum;
+            
+            if(s.status != 1) {
+               if(st[stair] < 3) {
+                  int nTime = 0;
+                  if(s.status == -1) {
+                     nTime = s.time + 1  + map[sList.get(stair).row][sList.get(stair).column];                     
+                  }else if(s.status == 0) {
+                     nTime = s.time + map[sList.get(stair).row][sList.get(stair).column];
+                  }
+                  
+                  pq.add(new Stair(stair, nTime, 1));
+                  st[stair]++;
+                  
+               }else {
+                  pq.add(new Stair(stair, s.time +1 , 0));
+               }       
+               
+               
+            }else {
+               st[stair]--;
+            }
+            
+         }
+      }
+      
+      ans = ans > time ? time : ans;
+   }
+   
+   static class Stair{
+      int stairNum, time, status;
+
+      public Stair(int stairNum, int time, int status) {
+         super();
+         this.stairNum = stairNum;
+         this.time = time;
+         this.status = status;
+      }
+
+      @Override
+      public String toString() {
+         return "Stair [stairNum=" + stairNum + ", time=" + time + ", status=" + status + "]";
+      }
+      
+      
+      
+      
+   }
+
+   static class People{
+      int row, column, time, status;
+
+      public People(int row, int column, int time, int status) {
+         super();
+         this.row = row;
+         this.column = column;
+         this.time = time;
+         this.status = status;
+      }
+
+      @Override
+      public String toString() {
+         return "People [row=" + row + ", column=" + column + ", time=" + time + ", status=" + status + "]";
+      }
+      
+      
+   }
+   
+   static class Node{
+      int row, column, len;
+
+      public Node(int row, int column, int len) {
+         super();
+         this.row = row;
+         this.column = column;
+         this.len = len;
+      }
+
+      @Override
+      public String toString() {
+         return "Node [row=" + row + ", column=" + column + ", len=" + len + "]";
+      }
+      
+      
+   }
+}//end of class
+```
+
