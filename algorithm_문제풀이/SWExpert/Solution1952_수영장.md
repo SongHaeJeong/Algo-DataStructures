@@ -63,3 +63,64 @@ public class Solution1952_수영장 {
 
 ```
 
+```java
+package solve;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Solution1952_수영장 {
+	private static int ans;
+	private static int[] value;
+	private static int[] month;
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
+		for (int testCase = 1; testCase <= T; testCase++) {
+			ans = Integer.MAX_VALUE;
+			value = new int[4];
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			
+			for (int i = 0; i < value.length; i++) {
+				value[i] = Integer.parseInt(st.nextToken());
+			}
+			
+			month = new int[13];
+			st = new StringTokenizer(br.readLine(), " ");
+			for (int i = 1; i <month.length; i++) {
+				month[i] = Integer.parseInt(st.nextToken());
+			}
+			
+			dfs(1, 0);
+			ans = ans > value[3] ? value[3] : ans;
+			
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+		}//end of testCase
+		System.out.println(sb.toString());
+	}// end of main
+
+	private static void dfs(int deep, int pay) {
+		if(ans <= pay ) return;
+		// TODO Auto-generated method stub
+		if(deep >= month.length) {
+			ans = ans > pay ? pay : ans;
+			return;
+		}
+		
+		//하루로 계산
+		dfs(deep + 1 , pay + month[deep] * value[0]);
+		//한달로 계산
+		dfs(deep + 1 , pay + value[1]);
+		//세달
+		dfs(deep + 3 , pay + value[2]);
+		
+		
+	}
+}// end of class
+
+```
+
