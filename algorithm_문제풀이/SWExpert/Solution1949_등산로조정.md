@@ -122,3 +122,120 @@ public class Solution1949_등산로조정 {
 
 ```
 
+```java
+package solve;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.StringTokenizer;
+
+public class Solution1949_등산로조정 {
+	private static int N, K, ans;
+	private static int[][] map;
+	private static ArrayList<Node> list;
+	private static ArrayList<Node> mostHeight;
+	private static boolean[][] visited;
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int T = Integer.parseInt(br.readLine());
+		StringBuilder sb = new StringBuilder();
+		for (int testCase = 1; testCase <= T; testCase++) {
+			StringTokenizer st = new StringTokenizer(br.readLine(), " ");
+			N = Integer.parseInt(st.nextToken());
+			K = Integer.parseInt(st.nextToken());
+			ans = Integer.MIN_VALUE;
+			map = new int[N][N];
+			list = new ArrayList<Node>();
+			for (int i = 0; i < map.length; i++) {
+				st = new StringTokenizer(br.readLine() , " ");
+				for (int j = 0; j < map.length; j++) {
+					map[i][j] = Integer.parseInt(st.nextToken());
+					if(map[i][j] > 0) list.add(new Node(i,j ,map[i][j]));
+				}
+			}
+			
+			Collections.sort(list, new Comparator<Node>() {
+
+				@Override
+				public int compare(Node o1, Node o2) {
+					// TODO Auto-generated method stub
+					return o1.height - o2.height;
+				}
+			});
+			
+			mostHeight = new ArrayList<Node>();
+			
+			for(int i = list.size()-1 ; i > 0 ; i--) {
+				if(list.get(i).height == list.get(list.size()-1).height) {
+					mostHeight.add(list.get(i));
+				}else break;
+			}
+			
+			
+			for (Node n  : mostHeight) {
+				visited = new boolean[N][N];
+				int row = n.row;
+				int column = n.column;		
+				visited[row][column] = true;
+				dfs(row, column, 0, 1 , map[row][column]);
+				visited[row][column] = false;
+			}
+			
+			sb.append("#").append(testCase).append(" ").append(ans).append("\n");
+			
+		}
+		System.out.println(sb.toString());
+		
+	}//end of main
+	private static int[] dx = {-1, 0, 1, 0};
+	private static int[] dy = { 0, -1, 0, 1};
+	
+	private static void dfs(int row, int column, int count, int len , int mapValue) {
+		// TODO Auto-generated method stub
+		ans = ans < len ? len : ans;
+		
+		for (int i = 0; i < dx.length; i++) {
+			int nx=  row + dx[i];
+			int ny = column + dy[i];
+			if(nx < 0 || ny < 0 || nx >= N || ny >= N || visited[nx][ny]) continue;
+			if(mapValue <= map[nx][ny] && count == 1) continue;
+			if(mapValue <= map[nx][ny] && count == 0) {
+				if(map[nx][ny] - K < mapValue ) {
+					int diffLen = Math.abs(map[row][column] - map[nx][ny])+1;
+					visited[nx][ny] = true;
+					dfs(nx, ny, count +1, len +1, map[nx][ny] - diffLen);
+					visited[nx][ny] = false;
+				}
+			}else {
+				visited[nx][ny] = true;
+				dfs(nx, ny, count, len+1, map[nx][ny]);
+				visited[nx][ny] =false;
+			}
+		}
+	
+	}
+
+	static class Node{
+		int row, column, height;
+
+		public Node(int row, int column, int height) {
+			super();
+			this.row = row;
+			this.column = column;
+			this.height = height;
+		}
+
+		@Override
+		public String toString() {
+			return "Node [row=" + row + ", column=" + column + ", height=" + height + "]";
+		}
+		
+		
+	}
+}//end of class
+
+```
+
